@@ -173,3 +173,26 @@ export const serviceTypes = [
   { name: 'Thai Massage', duration: 90, price: 145, color: '#f97316' },
   { name: 'Relaxation', duration: 60, price: 100, color: '#22c55e' },
 ];
+// ── Service Builder Types ──────────────────────────────────────────────────
+
+export interface ServiceTier {
+  id: string;
+  serviceId: string;
+  duration: number;
+  price: number;
+}
+
+export interface Service {
+  id: string;
+  name: string;
+  color: string;
+  isActive: boolean;
+  tiers: ServiceTier[];
+}
+
+export interface AddOn {
+  id: string;
+  name: string;
+  price: number;
+  isActive: boolean;
+}

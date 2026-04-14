@@ -3,6 +3,7 @@ import { useAppContext } from '@/contexts/AppContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from './Sidebar';
 import Dashboard from './Dashboard';
+import SettingsPage from './Settings';
 import ClientManagement from './ClientManagement';
 import IncomeTracking from './IncomeTracking';
 import ExpenseTracker from './ExpenseTracker';
@@ -22,6 +23,7 @@ const AppLayout: React.FC = () => {
       case 'expenses': return <ExpenseTracker />;
       case 'calendar': return <CalendarView />;
       case 'reports': return <Reports />;
+      case 'settings': return <SettingsPage />;
       default: return <Dashboard />;
     }
   };

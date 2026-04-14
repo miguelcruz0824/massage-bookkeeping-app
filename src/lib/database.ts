@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import type { Client, Appointment, Expense, IncomeEntry } from '@/data/sampleData';
+import type { Client, Appointment, Expense, IncomeEntry, Service, ServiceTier, AddOn } from '@/data/sampleData';
 import {
   clients as seedClients,
   weekAppointments as seedAppointments,
@@ -316,4 +316,135 @@ export async function editAppointment(id: string, updates: Partial<Appointment>)
     .single();
   if (error) throw error;
   return mapAppointment(data);
+}
+// ── Services ──────────────────────────────────────────────────────────────
+
+import type { Service, ServiceTier, AddOn } from '@/data/sampleData';
+
+function mapService(row: any, tiers: ServiceTier[]): Service {
+  return {
+    id: row.id,
+    name: row.name,
+    color: row.color,
+    isActive: row.is_active,
+    tiers,
+  };
+}
+
+function mapTier(row: any): ServiceTier {
+  return {
+    id: row.id,
+    serviceId: row.service_id,
+    duration: Number(row.duration),
+    price: Number(row.price),
+  };
+}
+
+function mapAddOn(row: any): AddOn {
+  return {
+    id: row.id,
+    name: row.name,
+    price: Number(row.price),
+    isActive: row.is_active,
+  };
+}
+
+export async function fetchServices(): Promise<Service[]> {
+  const { data: serviceRows, error: sErr } = await supabase
+    .from('services')
+    .select('*')
+    .order('name');
+  if (sErr) throw sErr;
+
+  const { data: tierRows, error: tErr } = await supabase
+    .from('service_tiers')
+    .select('*')
+    .order('duration');
+  if (tErr) throw tErr;
+
+  return (serviceRows || []).map(s =>
+    mapService(s, (tierRows || []).filter(t => t.service_id === s.id).map(mapTier))
+  );
+}
+
+export async function createService(name: string, color: string): Promise<Service> {
+  const id = `svc${Date.now()}`;
+  const { data, error } = await supabase
+    .from('services')
+    .insert({ id, name, color, is_active: true })
+    .select()
+    .single();
+  if (error) throw error;
+  return mapService(data, []);
+}
+
+export async function updateService(id: string, updates: { name?: string; color?: string; isActive?: boolean }): Promise<void> {
+  const dbUpdates: any = {};
+  if (updates.name !== undefined) dbUpdates.name = updates.name;
+  if (updates.color !== undefined) dbUpdates.color = updates.color;
+  if (updates.isActive !== undefined) dbUpdates.is_active = updates.isActive;
+  const { error } = await supabase.from('services').update(dbUpdates).eq('id', id);
+  if (error) throw error;
+}
+
+export async function deleteService(id: string): Promise<void> {
+  const { error } = await supabase.from('services').delete().eq('id', id);
+  if (error) throw error;
+}
+
+export async function upsertServiceTier(tier: Omit<ServiceTier, 'id'> & { id?: string }): Promise<ServiceTier> {
+  const row = {
+    id: tier.id || `tier${Date.now()}`,
+    service_id: tier.serviceId,
+    duration: tier.duration,
+    price: tier.price,
+  };
+  const { data, error } = await supabase
+    .from('service_tiers')
+    .upsert(row, { onConflict: 'id' })
+    .select()
+    .single();
+  if (error) throw error;
+  return mapTier(data);
+}
+
+export async function deleteServiceTier(id: string): Promise<void> {
+  const { error } = await supabase.from('service_tiers').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// ── Add-ons ───────────────────────────────────────────────────────────────
+
+export async function fetchAddOns(): Promise<AddOn[]> {
+  const { data, error } = await supabase
+    .from('addons')
+    .select('*')
+    .order('name');
+  if (error) throw error;
+  return (data || []).map(mapAddOn);
+}
+
+export async function createAddOn(name: string, price: number): Promise<AddOn> {
+  const row = { id: `addon${Date.now()}`, name, price, is_active: true };
+  const { data, error } = await supabase
+    .from('addons')
+    .insert(row)
+    .select()
+    .single();
+  if (error) throw error;
+  return mapAddOn(data);
+}
+
+export async function updateAddOn(id: string, updates: { name?: string; price?: number; isActive?: boolean }): Promise<void> {
+  const dbUpdates: any = {};
+  if (updates.name !== undefined) dbUpdates.name = updates.name;
+  if (updates.price !== undefined) dbUpdates.price = updates.price;
+  if (updates.isActive !== undefined) dbUpdates.is_active = updates.isActive;
+  const { error } = await supabase.from('addons').update(dbUpdates).eq('id', id);
+  if (error) throw error;
+}
+
+export async function deleteAddOn(id: string): Promise<void> {
+  const { error } = await supabase.from('addons').delete().eq('id', id);
+  if (error) throw error;
 }

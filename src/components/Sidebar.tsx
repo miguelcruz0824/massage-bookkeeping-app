@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppContext, PageView } from '@/contexts/AppContext';
 import {
-  LayoutDashboard, Users, DollarSign, Receipt, Calendar, BarChart3,
+  LayoutDashboard, Users, DollarSign, Receipt, Calendar, BarChart3, Settings,
   ChevronLeft, ChevronRight, Leaf, X
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -13,6 +13,7 @@ const navItems: { id: PageView; label: string; icon: React.ElementType }[] = [
   { id: 'expenses', label: 'Expenses', icon: Receipt },
   { id: 'calendar', label: 'Calendar', icon: Calendar },
   { id: 'reports', label: 'Reports', icon: BarChart3 },
+  { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
 const Sidebar: React.FC = () => {
