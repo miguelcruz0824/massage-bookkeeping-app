@@ -96,7 +96,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const toggleSidebar = () => setSidebarOpen(prev => !prev);
 
   // Derived: today & week appointments
-  const todayAppts = allAppts.filter(a => a.date === '2026-04-01');
+  const todayAppts = allAppts.filter(a => a.date === new Date().toISOString().split('T')[0]);
   const weekAppts = allAppts;
 
   // ── Load all data ──────────────────────────────────────────────
@@ -107,7 +107,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       await db.checkAndSeedData();
       const [clientsData, apptsData, expensesData, incomeData, servicesData, addonsData] = await Promise.all([
         db.fetchClients(),
-        db.fetchAppointments('2026-03-29', '2026-04-03'),
+        db.fetchAppointments(),
         db.fetchExpenses(),
         db.fetchIncome(),
         db.fetchServices(),
