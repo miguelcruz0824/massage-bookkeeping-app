@@ -218,6 +218,7 @@ const CalendarView: React.FC = () => {
     setSelectedDay(today);
     setWeekBase(new Date());
     setMonthBase(new Date());
+    setViewMode('day');
   };
 
   // ── Day view data ──────────────────────────────────────────────
