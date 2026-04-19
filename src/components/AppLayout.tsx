@@ -10,6 +10,7 @@ import ExpenseTracker from './ExpenseTracker';
 import CalendarView from './CalendarView';
 import Reports from './Reports';
 import { Menu, Search, Bell, Settings, Leaf, RefreshCw, AlertTriangle, Loader2 } from 'lucide-react';
+import ProfileAvatar from './ProfileAvatar';
 
 const AppLayout: React.FC = () => {
   const { sidebarOpen, toggleSidebar, currentPage, searchQuery, setSearchQuery, loading, error, retryLoad } = useAppContext();
@@ -120,8 +121,8 @@ const AppLayout: React.FC = () => {
             <button className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
               <Settings className="w-5 h-5 text-gray-500" />
             </button>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-300 flex items-center justify-center text-xs font-semibold text-[#1a3028] ml-2">
-              AM
+            <div className="ml-2">
+              <ProfileAvatar size="sm" showEditOnHover={true} />
             </div>
           </div>
         </header>

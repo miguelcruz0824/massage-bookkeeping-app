@@ -5,6 +5,7 @@ import {
   ChevronLeft, ChevronRight, Leaf, X
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import ProfileAvatar from './ProfileAvatar';
 
 const navItems: { id: PageView; label: string; icon: React.ElementType }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -99,9 +100,7 @@ const Sidebar: React.FC = () => {
         {sidebarOpen && (
           <div className="p-4 border-t border-white/10">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-teal-300 flex items-center justify-center text-sm font-semibold text-[#1a3028]">
-                AW
-              </div>
+              <ProfileAvatar size="sm" showEditOnHover={true} />
               <div className="overflow-hidden">
                 <p className="text-sm font-medium truncate">Allison Muniz</p>
                 <p className="text-xs text-emerald-300/60 truncate">LMT #00000</p>
