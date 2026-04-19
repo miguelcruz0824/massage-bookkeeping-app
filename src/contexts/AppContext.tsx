@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { toast } from '@/components/ui/use-toast';
 import type { Client, Appointment, Expense, IncomeEntry, Service, AddOn } from '@/data/sampleData';
 import * as db from '@/lib/database';
-import type { TimeBlock } from '@/lib/database';
+import type { TimeBlock, HoursOfOperation } from '@/lib/database';
 
 export type PageView = 'dashboard' | 'clients' | 'income' | 'expenses' | 'calendar' | 'reports' | 'settings';
 
@@ -25,6 +25,7 @@ interface AppContextType {
   addons: AddOn[];
   bufferTime: number;
   timeBlocks: TimeBlock[];
+  hours: HoursOfOperation[];
   addExpense: (expense: Omit<Expense, 'id'>) => Promise<void>;
   addIncome: (entry: Omit<IncomeEntry, 'id'>) => Promise<void>;
   markAppointmentPaid: (id: string) => Promise<void>;
@@ -47,6 +48,7 @@ interface AppContextType {
   updateBufferTime: (minutes: number) => Promise<void>;
   addTimeBlock: (block: Omit<TimeBlock, 'id'>) => Promise<void>;
   removeTimeBlock: (id: string) => Promise<void>;
+  updateHours: (hours: HoursOfOperation) => Promise<void>;
   selectedClient: Client | null;
   setSelectedClient: (client: Client | null) => void;
   savingExpense: boolean;
@@ -72,6 +74,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [addons, setAddons] = useState<AddOn[]>([]);
   const [bufferTime, setBufferTime] = useState(15);
   const [timeBlocks, setTimeBlocks] = useState<TimeBlock[]>([]);
+  const [hours, setHours] = useState<HoursOfOperation[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [savingExpense, setSavingExpense] = useState(false);
   const [savingIncome, setSavingIncome] = useState(false);
@@ -86,7 +89,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setError(null);
     try {
       await db.checkAndSeedData();
-      const [clientsData, apptsData, expensesData, incomeData, servicesData, addonsData, bufferData, timeBlocksData] = await Promise.all([
+      const [clientsData, apptsData, expensesData, incomeData, servicesData, addonsData, bufferData, timeBlocksData, hoursData] = await Promise.all([
         db.fetchClients(),
         db.fetchAppointments(),
         db.fetchExpenses(),
@@ -95,6 +98,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         db.fetchAddOns(),
         db.fetchBufferTime(),
         db.fetchTimeBlocks(),
+        db.fetchHours(),
       ]);
       setClients(clientsData);
       setAllAppts(apptsData);
@@ -104,6 +108,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setAddons(addonsData);
       setBufferTime(bufferData);
       setTimeBlocks(timeBlocksData);
+      setHours(hoursData);
     } catch (err: any) {
       console.error('Failed to load data:', err);
       setError(err.message || 'Failed to load data. Please try again.');
@@ -275,13 +280,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     toast({ title: 'Time Block Removed' });
   };
 
+  const updateHours = async (h: HoursOfOperation) => {
+    await db.saveHours(h);
+    setHours(prev => prev.map(x => x.id === h.id ? h : x));
+    toast({ title: 'Hours Updated' });
+  };
+
   return (
     <AppContext.Provider value={{
       sidebarOpen, toggleSidebar, currentPage, setCurrentPage,
       searchQuery, setSearchQuery,
       loading, error, retryLoad: loadAllData,
       clients, expenses, income, todayAppts, weekAppts,
-      services, addons, bufferTime, timeBlocks,
+      services, addons, bufferTime, timeBlocks, hours,
       addExpense, addIncome, markAppointmentPaid,
       deleteExpenseItem, deleteIncomeItem,
       addClient, deleteClient, updateClientItem,
@@ -289,6 +300,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       addService, removeService, editService, addTier, removeTier,
       addAddOn, removeAddOn, editAddOn,
       updateBufferTime, addTimeBlock, removeTimeBlock,
+      updateHours,
       selectedClient, setSelectedClient,
       savingExpense, savingIncome, updatingAppointment,
     }}>

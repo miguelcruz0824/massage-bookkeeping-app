@@ -421,3 +421,44 @@ export async function deleteTimeBlock(id: string): Promise<void> {
   const { error } = await supabase.from('time_blocks').delete().eq('id', id);
   if (error) throw error;
 }
+// ── Hours of Operation ────────────────────────────────────────────
+
+export interface HoursOfOperation {
+  id: string;
+  dayOfWeek: number;
+  isOpen: boolean;
+  openTime: string;
+  closeTime: string;
+}
+
+function mapHours(row: any): HoursOfOperation {
+  return {
+    id: row.id,
+    dayOfWeek: row.day_of_week,
+    isOpen: row.is_open,
+    openTime: row.open_time,
+    closeTime: row.close_time,
+  };
+}
+
+export async function fetchHours(): Promise<HoursOfOperation[]> {
+  const { data, error } = await supabase
+    .from('hours_of_operation')
+    .select('*')
+    .order('day_of_week');
+  if (error) throw error;
+  return (data || []).map(mapHours);
+}
+
+export async function saveHours(hours: HoursOfOperation): Promise<void> {
+  const { error } = await supabase
+    .from('hours_of_operation')
+    .upsert({
+      id: hours.id,
+      day_of_week: hours.dayOfWeek,
+      is_open: hours.isOpen,
+      open_time: hours.openTime,
+      close_time: hours.closeTime,
+    }, { onConflict: 'id' });
+  if (error) throw error;
+}

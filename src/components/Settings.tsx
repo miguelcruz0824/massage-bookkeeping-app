@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAppContext } from '@/contexts/AppContext';
 import { Plus, Trash2, Edit2, Check, X, Settings as SettingsIcon, Sparkles, Clock } from 'lucide-react';
 
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const COLOR_OPTIONS = [
   '#10b981', '#8b5cf6', '#f59e0b', '#06b6d4', '#ec4899',
   '#3b82f6', '#f43f5e', '#14b8a6', '#e879f9', '#f97316',
@@ -18,10 +19,11 @@ const BLOCK_COLORS = [
 
 const Settings: React.FC = () => {
   const {
-    services, addons, bufferTime, timeBlocks,
+    services, addons, bufferTime, timeBlocks, hours,
     addService, removeService, editService, addTier, removeTier,
     addAddOn, removeAddOn, editAddOn,
     updateBufferTime, addTimeBlock, removeTimeBlock,
+    updateHours,
   } = useAppContext();
 
   // ── Service form state ─────────────────────────────────────────
@@ -519,6 +521,43 @@ const Settings: React.FC = () => {
             ))}
           </div>
         )}
+      </div>
+      {/* ── HOURS OF OPERATION ── */}
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="px-6 py-5 border-b border-gray-50">
+          <h2 className="text-lg font-semibold text-gray-900">Hours of Operation</h2>
+          <p className="text-sm text-gray-400 mt-0.5">Set which days and hours Allison is available</p>
+        </div>
+        <div className="divide-y divide-gray-50">
+          {hours.sort((a, b) => a.dayOfWeek - b.dayOfWeek).map(day => (
+            <div key={day.id} className="px-6 py-4 flex items-center gap-4 flex-wrap">
+              <div className="w-24 flex-shrink-0">
+                <span className="font-medium text-gray-900">{DAY_NAMES[day.dayOfWeek]}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => updateHours({ ...day, isOpen: !day.isOpen })}
+                  className={`relative w-10 h-6 rounded-full transition-colors ${day.isOpen ? 'bg-emerald-500' : 'bg-gray-300'}`}>
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${day.isOpen ? 'translate-x-5' : 'translate-x-1'}`} />
+                </button>
+                <span className={`text-sm ${day.isOpen ? 'text-emerald-600 font-medium' : 'text-gray-400'}`}>
+                  {day.isOpen ? 'Open' : 'Closed'}
+                </span>
+              </div>
+              {day.isOpen && (
+                <div className="flex items-center gap-2">
+                  <input type="time" value={day.openTime}
+                    onChange={e => updateHours({ ...day, openTime: e.target.value })}
+                    className="px-3 py-1.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400" />
+                  <span className="text-gray-400 text-sm">to</span>
+                  <input type="time" value={day.closeTime}
+                    onChange={e => updateHours({ ...day, closeTime: e.target.value })}
+                    className="px-3 py-1.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400" />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
