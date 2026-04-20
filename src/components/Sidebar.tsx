@@ -32,7 +32,7 @@ const Sidebar: React.FC = () => {
         ${isMobile ? 'fixed left-0 top-0 z-50 h-full' : 'relative'}
         ${sidebarOpen ? 'w-64' : 'w-20'}
         bg-gradient-to-b from-[#2d4a3e] to-[#1a3028] text-white flex flex-col
-        transition-all duration-300 ease-in-out min-h-screen
+        transition-all duration-300 ease-in-out min-h-screen flex-shrink-0
       `}>
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-6 border-b border-white/10">
@@ -70,7 +70,6 @@ const Sidebar: React.FC = () => {
                     ? 'bg-white/15 text-emerald-300 shadow-lg shadow-black/10'
                     : 'text-white/70 hover:bg-white/10 hover:text-white'}
                   ${!sidebarOpen ? 'justify-center' : ''}
-
                 `}
               >
                 <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-emerald-300' : ''}`} />
@@ -88,7 +87,6 @@ const Sidebar: React.FC = () => {
             <button
               onClick={toggleSidebar}
               className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all"
-
             >
               {sidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
               {sidebarOpen && <span className="text-xs">Collapse</span>}
@@ -97,17 +95,29 @@ const Sidebar: React.FC = () => {
         )}
 
         {/* User profile */}
-        {sidebarOpen && (
-          <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-white/10">
+          {sidebarOpen ? (
             <div className="flex items-center gap-3">
-              <ProfileAvatar size="sm" showEditOnHover={true} onClick={() => { setCurrentPage('settings'); if (isMobile) toggleSidebar(); }} />
+              <ProfileAvatar
+                size="sm"
+                showEditOnHover={true}
+                onClick={() => { setCurrentPage('settings'); if (isMobile) toggleSidebar(); }}
+              />
               <div className="overflow-hidden">
                 <p className="text-sm font-medium truncate">Allison Muniz</p>
                 <p className="text-xs text-emerald-300/60 truncate">LMT #00000</p>
               </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="flex justify-center">
+              <ProfileAvatar
+                size="sm"
+                showEditOnHover={true}
+                onClick={() => setCurrentPage('settings')}
+              />
+            </div>
+          )}
+        </div>
       </aside>
     </>
   );
