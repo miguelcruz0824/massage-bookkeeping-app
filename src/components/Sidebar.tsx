@@ -100,7 +100,7 @@ const Sidebar: React.FC = () => {
         {sidebarOpen && (
           <div className="p-4 border-t border-white/10">
             <div className="flex items-center gap-3">
-              <ProfileAvatar size="sm" showEditOnHover={true} />
+              <ProfileAvatar size="sm" showEditOnHover={true} onClick={() => { setCurrentPage('settings'); if (isMobile) toggleSidebar(); }} />
               <div className="overflow-hidden">
                 <p className="text-sm font-medium truncate">Allison Muniz</p>
                 <p className="text-xs text-emerald-300/60 truncate">LMT #00000</p>

@@ -13,7 +13,7 @@ import { Menu, Search, Bell, Settings, Leaf, RefreshCw, AlertTriangle, Loader2 }
 import ProfileAvatar from './ProfileAvatar';
 
 const AppLayout: React.FC = () => {
-  const { sidebarOpen, toggleSidebar, currentPage, searchQuery, setSearchQuery, loading, error, retryLoad } = useAppContext();
+  const { sidebarOpen, toggleSidebar, currentPage, setCurrentPage, searchQuery, setSearchQuery, loading, error, retryLoad } = useAppContext();
   const isMobile = useIsMobile();
 
   const renderPage = () => {
@@ -122,7 +122,7 @@ const AppLayout: React.FC = () => {
               <Settings className="w-5 h-5 text-gray-500" />
             </button>
             <div className="ml-2">
-              <ProfileAvatar size="sm" showEditOnHover={true} />
+              <ProfileAvatar size="sm" showEditOnHover={true} onClick={() => setCurrentPage('settings')} />
             </div>
           </div>
         </header>
