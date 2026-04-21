@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAppContext } from '@/contexts/AppContext';
+import { supabase } from '@/lib/supabase';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from './Sidebar';
 import Dashboard from './Dashboard';
@@ -9,7 +9,7 @@ import IncomeTracking from './IncomeTracking';
 import ExpenseTracker from './ExpenseTracker';
 import CalendarView from './CalendarView';
 import Reports from './Reports';
-import { Menu, Search, Bell, Settings, Leaf, RefreshCw, AlertTriangle, Loader2 } from 'lucide-react';
+import { Menu, Search, Bell, Settings, Leaf, RefreshCw, AlertTriangle, Loader2, LogOut } from 'lucide-react';
 import ProfileAvatar from './ProfileAvatar';
 
 const AppLayout: React.FC = () => {
@@ -118,8 +118,11 @@ const AppLayout: React.FC = () => {
               <Bell className="w-5 h-5 text-gray-500" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full" />
             </button>
-            <button className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+            <button onClick={() => setCurrentPage('settings')} className="p-2 hover:bg-gray-100 rounded-xl transition-colors" title="Settings">
               <Settings className="w-5 h-5 text-gray-500" />
+            </button>
+            <button onClick={() => supabase.auth.signOut()} className="p-2 hover:bg-gray-100 rounded-xl transition-colors" title="Sign Out">
+              <LogOut className="w-5 h-5 text-gray-500" />
             </button>
             <div className="ml-2">
               <ProfileAvatar size="sm" showEditOnHover={true} onClick={() => setCurrentPage('settings')} />
