@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAppContext } from '@/contexts/AppContext';
 import { supabase } from '@/lib/supabase';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from './Sidebar';
